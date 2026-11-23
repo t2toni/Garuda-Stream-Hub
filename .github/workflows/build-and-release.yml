@@ -1,0 +1,134 @@
+name: Build and Release Binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libasound2-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Compile native C++ engine
+        run: make
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Package with PyInstaller
+        env:
+          QT_API: pyqt6
+        run: |
+          pyinstaller --clean -y garuda_stream_hub.spec
+          mkdir -p dist/package
+          cp dist/garuda-stream-hub dist/package/
+          cp README.md dist/package/
+          cp -r assets dist/package/ 2>/dev/null || true
+          tar -czvf dist/garuda-stream-hub-linux-x86_64.tar.gz -C dist/package .
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: garuda-stream-hub-linux-x86_64
+          path: dist/garuda-stream-hub-linux-x86_64.tar.gz
+
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build Windows EXE with PyInstaller
+        env:
+          QT_API: pyqt6
+        run: |
+          pyinstaller --clean -y garuda_stream_hub.spec
+
+      - name: Package Windows ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist\release
+          Copy-Item dist\garuda-stream-hub.exe dist\release\GarudaStreamHub-windows-x64.exe
+          Copy-Item README.md dist\release\
+          Copy-Item -Recurse assets dist\release\assets
+          Compress-Archive -Path dist\release\* -DestinationPath dist\GarudaStreamHub-windows-x64.zip -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GarudaStreamHub-windows-x64
+          path: |
+            dist/release/GarudaStreamHub-windows-x64.exe
+            dist/GarudaStreamHub-windows-x64.zip
+
+  create-release:
+    name: Publish GitHub Release
+    needs: [build-linux, build-windows]
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: garuda-stream-hub-linux-x86_64
+          path: release-artifacts
+
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: GarudaStreamHub-windows-x64
+          path: release-artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-artifacts/garuda-stream-hub-linux-x86_64.tar.gz
+            release-artifacts/GarudaStreamHub-windows-x64.exe
+            release-artifacts/GarudaStreamHub-windows-x64.zip
+          name: Garuda Stream Hub Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
