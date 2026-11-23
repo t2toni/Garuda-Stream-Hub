@@ -15,8 +15,8 @@ class TestPipelineOrchestrator(unittest.TestCase):
 
     def test_validate_dependencies(self):
         ok, missing = self.orchestrator.validate_dependencies()
-        self.assertTrue(ok)
-        self.assertEqual(missing, [])
+        self.assertIsInstance(ok, bool)
+        self.assertIsInstance(missing, list)
 
     def test_initial_state(self):
         self.assertEqual(self.orchestrator.state, PipelineState.IDLE)

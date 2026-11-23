@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,6 +23,8 @@ class TestRecordingManager(unittest.TestCase):
         self.assertEqual(self.recorder.stats.duration_seconds, 0.0)
 
     def test_short_recording_session(self):
+        if not shutil.which("pactl"):
+            self.skipTest("pactl / PipeWire not available in test environment")
         # 1. Create test virtual sink
         test_sink = "REC_TEST_SINK"
         ok, _, _ = self.audio.create_virtual_sink(sink_name=test_sink)
