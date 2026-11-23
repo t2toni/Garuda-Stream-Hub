@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aswin18antony-code/Garuda-Stream-Hub/actions"><img src="https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen?style=for-the-badge&logo=githubactions" alt="CI"></a>
+  <a href="https://github.com/t2toni/Garuda-Stream-Hub/actions"><img src="https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen?style=for-the-badge&logo=githubactions" alt="CI"></a>
   <a href="#"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue?style=for-the-badge&logo=linux&logoColor=white" alt="Platform"></a>
   <a href="#"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python"></a>
   <a href="#"><img src="https://img.shields.io/badge/C%2B%2B-17%20Native%20Engine-orange?style=for-the-badge&logo=cplusplus" alt="C++"></a>
@@ -143,7 +143,7 @@ Pre-built binaries and portable bundles are available on GitHub Releases:
 | **Linux (Binary Executable)** | `garuda-stream-hub` | Direct Executable | Portable single-file binary |
 | **Windows 10 / 11 (x64)** | `GarudaStreamHub-windows-x64.zip` | Standalone Bundle | Includes one-click builder & launch scripts |
 
-👉 **[Download the Latest Release on GitHub](https://github.com/aswin18antony-code/Garuda-Stream-Hub/releases)**
+👉 **[Download the Latest Release on GitHub](https://github.com/t2toni/Garuda-Stream-Hub/releases)**
 
 ---
 
@@ -153,7 +153,7 @@ Pre-built binaries and portable bundles are available on GitHub Releases:
 
 ```bash
 # Clone repository
-git clone https://github.com/aswin18antony-code/Garuda-Stream-Hub.git
+git clone https://github.com/t2toni/Garuda-Stream-Hub.git
 cd Garuda-Stream-Hub
 
 # Build native C++ pybind11 module
@@ -169,7 +169,7 @@ make
 ### Windows (PowerShell / Command Prompt)
 
 ```cmd
-git clone https://github.com/aswin18antony-code/Garuda-Stream-Hub.git
+git clone https://github.com/t2toni/Garuda-Stream-Hub.git
 cd Garuda-Stream-Hub
 
 pip install -r requirements.txt
